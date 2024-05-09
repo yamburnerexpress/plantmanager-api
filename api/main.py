@@ -14,6 +14,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000/",
     "https://plantyard.netlify.app/",
+    "https://plantyard.netlify.app",
 ]
 
 app.add_middleware(
