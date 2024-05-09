@@ -2,6 +2,8 @@
 **/test.py
 api/.env
 venv/
+.idea/
+**/__pycache__/**
 **/.DS_Store
 .env.local
 .env.development.local
