@@ -1,0 +1,37 @@
+from fastapi import Depends, HTTPException, status, APIRouter
+from sqlalchemy.orm import Session
+from typing import Annotated
+from api import crud, models, schemas
+from api.database import get_db
+from api.auth.controller import jwt_required, get_current_user
+
+router = APIRouter(
+    prefix="/api/userplants",
+    dependencies=[Depends(jwt_required)]
+)
+
+@router.post("/create/")
+def create_plant(current_user: Annotated[schemas.User, Depends(get_current_user)], user_plant: schemas.UserPlantBase, db: Session = Depends(get_db)):
+    res = crud.create_user_plant(db=db, user_plant=user_plant, current_user=current_user)
+    return {"id": res.id}
+
+@router.post("/{plant_id}/update/", response_model=schemas.UserPlantInfoResponse)
+def update_user_plant(current_user: Annotated[schemas.User, Depends(get_current_user)], plant_id: int, user_plant: schemas.UserPlantUpdate, db: Session = Depends(get_db)):
+    res = crud.update_user_plant(db=db, plant_id=plant_id, user_plant=user_plant, current_user=current_user)
+    return res
+
+@router.get("/", response_model=list[schemas.UserDashboardGroup])  # schemas.UserPlantInfoResponse
+def get_user_plants(current_user: Annotated[schemas.User, Depends(get_current_user)], db: Session = Depends(get_db)):
+    res = crud.get_user_groups(db=db, current_user=current_user)
+    return res
+
+@router.get("/{plant_id}/", response_model=schemas.UserPlantInfoResponse)
+def get_user_plant_by_id(plant_id: int, current_user: Annotated[schemas.User, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return crud.get_user_plant_by_id(db=db, plant_id=plant_id, current_user=current_user)
+
+@router.post("/water/")
+def water_plants(plant_ids: schemas.WaterPlantsInput, current_user: Annotated[schemas.User, Depends(get_current_user)], db: Session = Depends(get_db)):
+    plants_watered = crud.water_plants(db=db, plant_ids=plant_ids, current_user=current_user)
+    return {"plants_watered": plants_watered}
+
+
