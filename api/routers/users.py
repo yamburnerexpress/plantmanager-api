@@ -9,11 +9,19 @@ router = APIRouter(
     prefix="/api/users",
 )
 
-@router.get("/", response_model=list[schemas.User])  # , dependencies=[Depends(jwt_required)]
+@router.get("/", response_model=list[schemas.User], dependencies=[Depends(jwt_required)])
 async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
+@router.get("/me/", dependencies=[Depends(jwt_required)])
+async def read_users_me(current_user: Annotated[int, Depends(get_current_user)], db: Annotated[Session, Depends(get_db)]):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    db_user = crud.get_user(db, user_id=current_user)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return current_user
 
 @router.get("/{user_id}/", response_model=schemas.User, dependencies=[Depends(jwt_required)])
 async def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -32,6 +40,5 @@ async def post_user(user: schemas.UserIn, db: Session = Depends(get_db)):
     crud.create_user_group(db=db, group=group, current_user=current_user.id)
     return current_user
 
-@router.get("/me", dependencies=[Depends(jwt_required)])
-async def read_users_me(current_user: Annotated[schemas.User, Depends(get_current_user)]):
-    return current_user
+
+# @router.post("/changepassword/", )

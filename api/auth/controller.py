@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from api.settings import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY
+from api import schemas
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

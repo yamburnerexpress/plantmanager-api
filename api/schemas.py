@@ -10,6 +10,8 @@ class UserBase(BaseModel):
 class UserIn(UserBase):
     password: str
 
+class UserChangePassword(UserIn):
+    newPassword: str
 
 class User(UserBase):
     id: int
@@ -41,6 +43,14 @@ class SunRequirementType(str, Enum):
     PART_SHADE = "PART_SHADE"
     FULL_SUN = "FULL_SUN"
 
+class PlantType(str, Enum):
+    TREE = "TREE"
+    LEAFY_PLANT = "LEAFY_PLANT"
+    FLOWER = "FLOWER"
+    SUCCULENT = "SUCCULENT"
+    HERB = "HERB"
+    VEGETABLE = "VEGETABLE"
+
 
 class WateringInfo(BaseModel):
     watering_freq: Optional[int] = None
@@ -51,7 +61,7 @@ class WateringInfo(BaseModel):
 class PlantBase(BaseModel):
     name: str
     scientific_name: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[PlantType] = None
     watering_freq: Optional[int] = None
     watering_period: Optional[WateringFrequencyPeriodType] = None
     watering_time: Optional[WateringTimeType] = None
@@ -117,3 +127,10 @@ class WaterPlantsInput(BaseModel):
 
 class UserDashboardGroup(UserGroupResponse):
     plants: List[UserPlantInfoResponse] = []
+
+class UserPlantNoteBase(BaseModel):
+    note: str
+
+class UserPlantNoteResponse(UserPlantNoteBase):
+    id: int
+    created_at: datetime.datetime

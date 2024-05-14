@@ -155,3 +155,23 @@ def get_has_default_group(db: Session, current_user):
         .order_by(models.UserGroup.name) \
         .first()
     return default_group is not None
+
+def create_user_plant_note(db: Session, plant_id: int, note: schemas.UserPlantNoteBase, current_user):
+    db_note = models.UserPlantNotes(
+        user_plant_id=plant_id,
+        user_id=current_user,
+        created_at=datetime.datetime.utcnow(),
+        note=note.note
+    )
+    db.add(db_note)
+    db.commit()
+    db.refresh(db_note)
+    return db_note
+
+def get_user_plant_notes(db: Session, plant_id: models.UserPlantNotes.user_plant_id, current_user: int):
+    notes = db.query(models.UserPlantNotes) \
+        .filter(models.UserPlantNotes.user_plant_id == plant_id) \
+        .filter(models.UserPlantNotes.user_id == current_user) \
+        .order_by(desc(models.UserPlantNotes.created_at)) \
+        .all()
+    return notes
