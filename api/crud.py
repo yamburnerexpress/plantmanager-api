@@ -31,6 +31,15 @@ def create_user(db: Session, user: schemas.UserIn):
     db.refresh(db_user)
     return db_user
 
+def change_my_password(db: Session, password: schemas.ChangePasswordInput, current_user: int):
+    hashed_password = get_hashed_password(password.newPassword)
+    u = update(models.User) \
+        .values({"hashed_password": hashed_password}) \
+        .where(models.User.id == current_user)
+    db.execute(u)
+    db.commit()
+    return db.query(models.User).filter(models.User.id == current_user).first()
+
 def create_plant(db: Session, plant: schemas.PlantBase):
     db_plant = models.Plant(
         name=plant.name,

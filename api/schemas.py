@@ -21,6 +21,10 @@ class User(UserBase):
     class Config:
         orm_model = True
 
+class ChangePasswordInput(BaseModel):
+    oldPassword: str
+    newPassword: str
+
 
 class Token(BaseModel):
     access_token: str
