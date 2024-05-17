@@ -6,8 +6,10 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     username: str
 
+class UserInviteCode(UserBase):
+    invite_code: str
 
-class UserIn(UserBase):
+class UserIn(UserInviteCode):
     password: str
 
 class UserChangePassword(UserIn):

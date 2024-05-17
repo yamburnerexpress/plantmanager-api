@@ -1,6 +1,6 @@
 import datetime
-import json
-from typing import Union
+import string
+import random
 from sqlalchemy import update, desc
 from sqlalchemy.orm import Session
 from . import models, schemas
@@ -18,13 +18,31 @@ def get_user_by_username(db: Session, username: str):
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
+def invite_user(db: Session, user: schemas.UserBase):
+    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    db_invite_code = models.UserInviteCodes(
+        username=user.username,
+        invite_code=code,
+        created_at=datetime.datetime.utcnow()
+    )
+    db.add(db_invite_code)
+    db.commit()
+    db.refresh(db_invite_code)
+    return db_invite_code
+
+def get_existing_invite(db: Session, user: schemas.UserBase):
+    return db.query(models.UserInviteCodes.invite_code).filter(models.UserInviteCodes.username == user.username).first()
+
+def get_invited_users(db: Session):
+    return db.query(models.UserInviteCodes).all()
 
 def create_user(db: Session, user: schemas.UserIn):
     hashed_password = get_hashed_password(user.password)
     db_user = models.User(
         username=user.username,
         hashed_password=hashed_password,
-        created_at=datetime.datetime.utcnow()
+        created_at=datetime.datetime.utcnow(),
+        admin=False
     )
     db.add(db_user)
     db.commit()

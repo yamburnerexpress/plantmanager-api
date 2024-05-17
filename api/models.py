@@ -8,6 +8,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(255), unique=True, index=True)
+    admin = Column(Boolean)
     hashed_password = Column(String(128))
     created_at = Column(DateTime)
     last_seen = Column(DateTime)
@@ -63,3 +64,9 @@ class UserPlantNotes(Base):
     deleted_at = Column(DateTime)
     note = Column(Text)
 
+class UserInviteCodes(Base):
+    __tablename__ = "user_invite_codes"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(255), unique=True)
+    invite_code = Column(String(255), unique=True)
+    created_at = Column(DateTime)
