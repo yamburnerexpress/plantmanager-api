@@ -72,6 +72,7 @@ class PlantBase(BaseModel):
     watering_period: Optional[WateringFrequencyPeriodType] = None
     watering_time: Optional[WateringTimeType] = None
     sun_requirement: Optional[SunRequirementType] = None
+    external_link: Optional[str] = None
 
 
 class PlantResponse(PlantBase):

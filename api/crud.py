@@ -68,6 +68,7 @@ def create_plant(db: Session, plant: schemas.PlantBase):
         watering_period=plant.watering_period,
         watering_time=plant.watering_time,
         sun_requirement=plant.sun_requirement,
+        external_link=plant.external_link
     )
     db.add(db_plant)
     db.commit()
