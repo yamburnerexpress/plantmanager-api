@@ -39,6 +39,7 @@ class UserGroup(Base):
     plants = relationship(
         "UserPlant",
         backref="plants",
+        lazy="joined",
         primaryjoin="and_(UserGroup.id==UserPlant.user_group_id, UserPlant.deleted_at==None)"
     )
 
