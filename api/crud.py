@@ -1,7 +1,7 @@
 import datetime
 import string
 import random
-from sqlalchemy import update, desc
+from sqlalchemy import update, desc, case
 from sqlalchemy.orm import Session
 from . import models, schemas
 from api.auth.controller import get_hashed_password
@@ -182,6 +182,10 @@ def get_user_group_by_id(db: Session, group_id: int, current_user: schemas.User)
 def get_user_groups(db: Session, current_user):
     res = db.query(models.UserGroup) \
         .filter(models.UserGroup.user_id == current_user) \
+        .order_by(
+            case((models.UserGroup.is_default == True, 1), else_=0),
+            models.UserGroup.name
+        ) \
         .all()
     return res
 
