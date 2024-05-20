@@ -142,6 +142,15 @@ def water_plants(db: Session, plant_ids: schemas.WaterPlantsInput, current_user)
     db.commit()
     return plant_ids
 
+def delete_user_plant(db: Session, plant_id: int, current_user):
+    u = update(models.UserPlant) \
+        .values({"deleted_at": datetime.datetime.utcnow()}) \
+        .where(models.UserPlant.id == plant_id) \
+        .where(models.UserPlant.user_id == current_user)
+    result = db.execute(u)
+    db.commit()
+    return result
+
 def create_user_group(db: Session, group: schemas.UserGroupInput, current_user):
     db_group = models.UserGroup(
         name=group.name,

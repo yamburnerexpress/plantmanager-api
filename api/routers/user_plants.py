@@ -55,3 +55,14 @@ def get_user_plant_notes(
 ):
     q = crud.get_user_plant_notes(db=db, plant_id=plant_id, current_user=current_user)
     return q
+
+@router.delete("/{plant_id}/delete/")
+def delete_user_plant(
+        plant_id: int,
+        current_user: Annotated[int, Depends(get_current_user)],
+        db: Annotated[Session, Depends(get_db)]
+):
+    q = crud.delete_user_plant(db=db, plant_id=plant_id, current_user=current_user)
+    if not q:
+        raise HTTPException(status_code=500, detail="Could not complete request")
+    return JSONResponse(status_code=200, content={"message": "User plant deleted successfully"})

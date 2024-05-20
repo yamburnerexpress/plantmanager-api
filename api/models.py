@@ -36,7 +36,11 @@ class UserGroup(Base):
     name = Column(String(128))
     created_at = Column(DateTime)
     deleted_at = Column(DateTime)
-    plants = relationship("UserPlant", backref="plants")
+    plants = relationship(
+        "UserPlant",
+        backref="plants",
+        primaryjoin="and_(UserGroup.id==UserPlant.user_group_id, UserPlant.deleted_at==None)"
+    )
 
 
 class UserPlant(Base):
