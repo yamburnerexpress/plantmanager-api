@@ -57,8 +57,8 @@ class UserPlant(Base):
     user_group_id = Column(Integer, ForeignKey("user_groups.id"))
     last_watered = Column(DateTime)
     deleted_at = Column(DateTime)
-    plant_data = relationship("Plant", backref="plant_data")
-    note_data = relationship("UserPlantNotes", backref="note_data")
+    plant_data = relationship("Plant", lazy="joined", backref="plant_data")
+    note_data = relationship("UserPlantNotes", lazy="joined", backref="note_data")
 
 class UserPlantNotes(Base):
     __tablename__ = "user_plant_notes"
