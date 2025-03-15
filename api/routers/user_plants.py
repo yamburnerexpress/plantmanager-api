@@ -16,7 +16,18 @@ async def create_plant(current_user: Annotated[schemas.User, Depends(get_current
     res = crud.create_user_plant(db=db, user_plant=user_plant, current_user=current_user)
     return {"id": res.id}
 
-@router.post("/{plant_id}/update/", response_model=schemas.UserPlantInfoResponse)
+@router.get("/graveyard/", response_model=list[schemas.UserPlantInfoResponse])
+async def get_deleted_user_plants(
+        db: Annotated[Session, Depends(get_db)],
+        current_user: Annotated[int, Depends(get_current_user)]
+):
+    q = crud.get_deleted_user_plants(db=db, current_user=current_user)
+    print(q)
+    if not q:
+        raise HTTPException(status_code=500, detail="Could not complete request")
+    return q
+
+@router.post("/{plant_id:int}/update/", response_model=schemas.UserPlantInfoResponse)
 async def update_user_plant(current_user: Annotated[schemas.User, Depends(get_current_user)], plant_id: int, user_plant: schemas.UserPlantUpdate, db: Session = Depends(get_db)):
     res = crud.update_user_plant(db=db, plant_id=plant_id, user_plant=user_plant, current_user=current_user)
     return res
@@ -26,9 +37,13 @@ async def get_user_plants(current_user: Annotated[schemas.User, Depends(get_curr
     res = crud.get_user_groups(db=db, current_user=current_user)
     return res
 
-@router.get("/{plant_id}/", response_model=schemas.UserPlantInfoResponse)
+@router.get("/{plant_id:int}/", response_model=schemas.UserPlantInfoResponse)
 async def get_user_plant_by_id(plant_id: int, current_user: Annotated[schemas.User, Depends(get_current_user)], db: Session = Depends(get_db)):
-    return crud.get_user_plant_by_id(db=db, plant_id=plant_id, current_user=current_user)
+    res = crud.get_user_plant_by_id(db=db, plant_id=plant_id, current_user=current_user)
+    if not res:
+        raise HTTPException(status_code=404, detail="Could not find user plant")
+    return res
+
 
 @router.post("/water/")
 async def water_plants(plant_ids: schemas.WaterPlantsInput, current_user: Annotated[schemas.User, Depends(get_current_user)], db: Session = Depends(get_db)):

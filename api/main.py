@@ -6,6 +6,8 @@ from api.routers import auth, users, plants, user_plants, user_groups
 
 models.Base.metadata.create_all(bind=engine)
 
+# uvicorn api.main:app --reload
+
 app = FastAPI()
 
 origins = ["*"]

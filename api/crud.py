@@ -133,6 +133,12 @@ def get_user_plant_by_id(db: Session, plant_id: int, current_user):
         .first()
     return res
 
+def get_deleted_user_plants(db: Session, current_user):
+    res = db.query(models.UserPlant) \
+        .filter(models.UserPlant.user_id == current_user) \
+        .all()
+    return res
+
 def water_plants(db: Session, plant_ids: schemas.WaterPlantsInput, current_user):
     u = update(models.UserPlant) \
         .values({"last_watered": datetime.datetime.utcnow()}) \
@@ -182,6 +188,7 @@ def get_user_group_by_id(db: Session, group_id: int, current_user: schemas.User)
 def get_user_groups(db: Session, current_user):
     res = db.query(models.UserGroup) \
         .filter(models.UserGroup.user_id == current_user) \
+        .filter(models.UserGroup.deleted_at == None) \
         .order_by(
             case((models.UserGroup.is_default == True, 1), else_=0),
             models.UserGroup.name
